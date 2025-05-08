@@ -18,7 +18,7 @@ export default function LoginPage() {
     try {
       // 强制重新授权，添加 prompt=consent 参数
       await signIn("github", {
-        callbackUrl: "/wechat-dingtalk-sender",
+        callbackUrl: "https://v0-wechat-to-dingtalk-lo.vercel.app/wechat-dingtalk-sender",
         // 添加以下参数强制显示 GitHub 授权页面
         authorization: { params: { prompt: "consent" } },
       })
