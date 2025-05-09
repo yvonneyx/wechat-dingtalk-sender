@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-
+import * as cheerio from "cheerio";
 /**
  * 发送钉钉机器人消息
  */
@@ -7,8 +7,6 @@ async function sendDingTalkMessage(accessToken: string, messageBody: any) {
   const url = `https://oapi.dingtalk.com/robot/send?access_token=${accessToken}`;
 
   try {
-    alert(`正在发送消息到钉钉机器人...${url}`);
-    console.log("正在发送消息到钉钉机器人...");
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,56 +48,51 @@ function createMarkdownMessage(title: string, text: string) {
  * @returns {Promise<{title: string, image: string, description: string, url: string}>}
  */
 async function extractWeChatArticleInfo(url: string) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 13_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/7.0.20 NetType/WIFI Language/zh_CN",
+    },
   });
 
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
+  const html = await res.text();
+  const $ = cheerio.load(html);
 
-  const result = await page.evaluate(() => {
-    const getMeta = (prop: any) =>
-      document
-        .querySelector(`meta[property="${prop}"]`)
-        ?.getAttribute("content") || "";
+  const getMeta = (prop: string) =>
+    $(`meta[property="${prop}"]`).attr("content") || "";
 
-    return {
-      title: getMeta("og:title"),
-      image: getMeta("og:image"),
-      description: getMeta("og:description"),
-      author: getMeta("og:article:author"),
-      url: window.location.href,
-    };
-  });
-
-  await browser.close();
-  return result;
+  return {
+    title: getMeta("og:title"),
+    image: getMeta("og:image"),
+    description: getMeta("og:description"),
+    author: getMeta("og:article:author"),
+    url,
+  };
 }
 
 export async function sendWeChatArticleToDingTalk(articleUrl: string, group: any) {
   const { title, image, description, url, author } =
     await extractWeChatArticleInfo(articleUrl);
 
-  //   const markdownText = `
-  // **[广播] AntV 数据可视化公众号推文新鲜出炉**
+  const markdownText = `
+  **[广播] AntV 数据可视化公众号推文新鲜出炉**
 
-  // ---
+  ---
 
-  // [![封面图](${image})](${url})
+  [![封面图](${image})](${url})
 
-  // **《${title}》**
+  **《${title}》**
 
-  // > 作者：${author}
+  > 作者：${author}
 
-  // ${description}
+  ${description}
 
-  // ---
+  ---
 
-  // [向右][点击阅读原文](${url})
-  // `;
+  [向右][点击阅读原文](${url})
+  `;
 
-  // const message = createMarkdownMessage("AntV 推文通知", markdownText);
-  // const result = await sendDingTalkMessage(group.accessToken, message);
-  return true;
+  const message = createMarkdownMessage("AntV 推文通知", markdownText);
+  const result = await sendDingTalkMessage(group.accessToken, message);
+  return result;
 }
