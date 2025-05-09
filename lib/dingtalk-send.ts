@@ -7,6 +7,7 @@ async function sendDingTalkMessage(accessToken: string, messageBody: any) {
   const url = `https://oapi.dingtalk.com/robot/send?access_token=${accessToken}`;
 
   try {
+    alert(`正在发送消息到钉钉机器人...${url}`);
     console.log("正在发送消息到钉钉机器人...");
     const response = await fetch(url, {
       method: "POST",
@@ -80,25 +81,25 @@ export async function sendWeChatArticleToDingTalk(articleUrl: string, group: any
   const { title, image, description, url, author } =
     await extractWeChatArticleInfo(articleUrl);
 
-  const markdownText = `
-**[广播] AntV 数据可视化公众号推文新鲜出炉**
+  //   const markdownText = `
+  // **[广播] AntV 数据可视化公众号推文新鲜出炉**
 
----
+  // ---
 
-[![封面图](${image})](${url})
+  // [![封面图](${image})](${url})
 
-**《${title}》**
+  // **《${title}》**
 
-> 作者：${author}
+  // > 作者：${author}
 
-${description}
+  // ${description}
 
----
+  // ---
 
-[向右][点击阅读原文](${url})
-`;
+  // [向右][点击阅读原文](${url})
+  // `;
 
-  const message = createMarkdownMessage("AntV 推文通知", markdownText);
-  const result = await sendDingTalkMessage(group.accessToken, message);
-  return result;
+  // const message = createMarkdownMessage("AntV 推文通知", markdownText);
+  // const result = await sendDingTalkMessage(group.accessToken, message);
+  return true;
 }
