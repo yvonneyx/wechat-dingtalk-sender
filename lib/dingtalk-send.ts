@@ -1,4 +1,3 @@
-import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 /**
  * 发送钉钉机器人消息
