@@ -1,24 +1,20 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+// import { getSession } from "@/lib/session"
 
 export async function middleware(request: NextRequest) {
-  // 获取认证令牌
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  })
-
-  const isAuthenticated = !!token
-
+  // 获取会话
+  // const session = await getSession()
+  // const isAuthenticated = !!session && session.expiresAt > Date.now()
+  // console.log('session', session)
   // 如果用户访问的是受保护的路径且未认证，重定向到登录页面
   if (
-    !isAuthenticated &&
+    // !isAuthenticated &&
     request.nextUrl.pathname.startsWith("/wechat-dingtalk-sender") &&
     !request.nextUrl.pathname.includes("/_next") &&
     !request.nextUrl.pathname.includes("/api/")
   ) {
-    return NextResponse.redirect(new URL("/auth/login", request.url))
+    // return NextResponse.redirect(new URL("/auth/login", request.url))
   }
 
   return NextResponse.next()

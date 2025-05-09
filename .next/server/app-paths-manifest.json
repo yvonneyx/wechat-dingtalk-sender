@@ -1,5 +1,3 @@
 {
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/page": "app/page.js",
-  "/auth/login/page": "app/auth/login/page.js"
+  "/wechat-dingtalk-sender/page": "app/wechat-dingtalk-sender/page.js"
 }

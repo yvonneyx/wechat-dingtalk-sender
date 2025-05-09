@@ -11,20 +11,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/auth/login/layout": [
+    "/wechat-dingtalk-sender/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/login/layout.js"
+      "static/chunks/app/wechat-dingtalk-sender/layout.js"
     ],
-    "/auth/login/page": [
+    "/wechat-dingtalk-sender/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/login/page.js"
+      "static/chunks/app/wechat-dingtalk-sender/page.js"
     ],
-    "/api/auth/[...nextauth]/route": [
+    "/api/auth/user/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/[...nextauth]/route.js"
+      "static/chunks/app/api/auth/user/route.js"
+    ],
+    "/api/dingtalk/send/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/dingtalk/send/route.js"
     ]
   }
 }

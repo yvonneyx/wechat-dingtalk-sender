@@ -1,103 +1,109 @@
-"use client"
+'use client';
 
-import type React from "react"
+import React from 'react';
 
-import { useState } from "react"
-import { SendHorizontal, Check, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
-// 模拟钉钉群组数据
-const dingGroups = [
-  { id: "group1", name: "产品团队" },
-  { id: "group2", name: "技术团队" },
-  { id: "group3", name: "市场团队" },
-  { id: "group4", name: "销售团队" },
-  { id: "group5", name: "管理层" },
-]
+import { useState } from 'react';
+import { SendHorizontal, Check, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { dingGroups } from '@/constants';
 
 export default function WeChatDingTalkSender() {
-  const [wechatUrl, setWechatUrl] = useState("")
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [wechatUrl, setWechatUrl] = useState('');
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<
     {
-      groupId: string
-      groupName: string
-      success: boolean
-      message: string
+      groupId: string;
+      groupName: string;
+      success: boolean;
+      message: string;
     }[]
-  >([])
-  const [error, setError] = useState("")
+  >([]);
+  const [error, setError] = useState('');
 
   const handleGroupToggle = (groupId: string) => {
-    setSelectedGroups((prev) => (prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]))
-  }
+    setSelectedGroups((prev) =>
+      prev.includes(groupId)
+        ? prev.filter((id) => id !== groupId)
+        : [...prev, groupId],
+    );
+  };
 
   const handleSelectAll = () => {
     if (selectedGroups.length === dingGroups.length) {
-      setSelectedGroups([])
+      setSelectedGroups([]);
     } else {
-      setSelectedGroups(dingGroups.map((group) => group.id))
+      setSelectedGroups(dingGroups.map((group) => group.id));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // 验证输入
     if (!wechatUrl) {
-      setError("请输入微信公众号文章链接")
-      return
+      setError('请输入微信公众号文章链接');
+      return;
     }
 
     if (selectedGroups.length === 0) {
-      setError("请至少选择一个钉钉群组")
-      return
+      setError('请至少选择一个钉钉群组');
+      return;
     }
 
     // 清除之前的错误和结果
-    setError("")
-    setIsLoading(true)
+    setError('');
+    setIsLoading(true);
 
     try {
-      // 模拟发送到钉钉群的过程
       const newResults = await Promise.all(
         selectedGroups.map(async (groupId) => {
-          // 模拟API调用延迟
-          await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 1000))
+          const response = await fetch('/api/dingtalk/send', {
+            method: 'POST',
+            body: JSON.stringify({ articleUrl: wechatUrl, groupId }),
+          });
+          const result = await response.json();
+          const success = result.success;
 
-          // 随机成功或失败（80%成功率）
-          const success = Math.random() > 0.2
-          const group = dingGroups.find((g) => g.id === groupId)!
+          const group = dingGroups.find((g) => g.id === groupId)!;
 
           return {
             groupId,
             groupName: group.name,
             success,
-            message: success ? "发送成功" : "发送失败，请重试",
-          }
+            message: success ? '发送成功' : '发送失败，请重试',
+          };
         }),
-      )
+      );
 
-      setResults(newResults)
+      setResults(newResults);
     } catch (err) {
-      setError("发送过程中出现错误，请重试")
+      setError('发送过程中出现错误，请重试');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="container max-w-3xl py-10">
       <Card>
         <CardHeader>
           <CardTitle>微信文章钉钉群发工具</CardTitle>
-          <CardDescription>输入微信公众号文章链接，选择要发送的钉钉群组</CardDescription>
+          <CardDescription>
+            输入微信公众号文章链接，选择要发送的钉钉群组
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -115,8 +121,15 @@ export default function WeChatDingTalkSender() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>选择钉钉群组</Label>
-                  <Button type="button" variant="outline" size="sm" onClick={handleSelectAll}>
-                    {selectedGroups.length === dingGroups.length ? "取消全选" : "全选"}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAll}
+                  >
+                    {selectedGroups.length === dingGroups.length
+                      ? '取消全选'
+                      : '全选'}
                   </Button>
                 </div>
 
@@ -184,7 +197,9 @@ export default function WeChatDingTalkSender() {
                   <div
                     key={result.groupId}
                     className={`p-3 rounded-md flex items-center justify-between ${
-                      result.success ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"
+                      result.success
+                        ? 'bg-green-50 border border-green-200'
+                        : 'bg-red-50 border border-red-200'
                     }`}
                   >
                     <div className="flex items-center">
@@ -195,7 +210,13 @@ export default function WeChatDingTalkSender() {
                       )}
                       <span>{result.groupName}</span>
                     </div>
-                    <span className={result.success ? "text-green-600" : "text-red-600"}>{result.message}</span>
+                    <span
+                      className={
+                        result.success ? 'text-green-600' : 'text-red-600'
+                      }
+                    >
+                      {result.message}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -204,7 +225,8 @@ export default function WeChatDingTalkSender() {
                 <div className="flex justify-between text-sm">
                   <span>总计：{results.length}个群组</span>
                   <span>
-                    成功：{results.filter((r) => r.success).length}， 失败：{results.filter((r) => !r.success).length}
+                    成功：{results.filter((r) => r.success).length}， 失败：
+                    {results.filter((r) => !r.success).length}
                   </span>
                 </div>
               </div>
@@ -216,5 +238,5 @@ export default function WeChatDingTalkSender() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { signOut, useSession } from "next-auth/react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,16 +14,55 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Image from "next/image"
 
+interface UserInfo {
+  login: string
+  name: string | null
+  email: string | null
+  avatar_url: string | null
+}
+
 export function AuthStatus() {
-  const { data: session } = useSession()
+  const router = useRouter()
+  const [user, setUser] = useState<UserInfo | null>(null)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  useEffect(() => {
+    // 获取用户信息
+    async function fetchUserInfo() {
+      try {
+        const response = await fetch("/api/auth/user")
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+        }
+      } catch (error) {
+        console.error("获取用户信息失败:", error)
+      }
+    }
+
+    fetchUserInfo()
+  }, [])
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
-    await signOut({ callbackUrl: "/auth/login" })
+
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      router.push("/auth/login")
+    } catch (error) {
+      console.error("登出失败:", error)
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
-  if (!session?.user) {
+  if (!user) {
     return null
   }
 
@@ -31,10 +70,10 @@ export function AuthStatus() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          {session.user.image ? (
+          {user.avatar_url ? (
             <Image
-              src={session.user.image || "/placeholder.svg"}
-              alt={session.user.name || "用户头像"}
+              src={user.avatar_url || "/placeholder.svg"}
+              alt={user.name || "用户头像"}
               width={24}
               height={24}
               className="rounded-full"
@@ -42,15 +81,15 @@ export function AuthStatus() {
           ) : (
             <User className="h-4 w-4" />
           )}
-          <span className="hidden md:inline">{session.user.name}</span>
+          <span className="hidden md:inline">{user.name || user.login}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>账户信息</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled className="flex flex-col items-start">
-          <span className="text-sm font-medium">{session.user.name}</span>
-          <span className="text-xs text-muted-foreground">{session.user.email}</span>
+          <span className="text-sm font-medium">{user.name || user.login}</span>
+          {user.email && <span className="text-xs text-muted-foreground">{user.email}</span>}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
