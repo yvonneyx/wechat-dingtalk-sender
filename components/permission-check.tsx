@@ -46,7 +46,7 @@ export function PermissionCheck({ children }: { children: React.ReactNode }) {
         setPermissionState({
           isChecking: false,
           isAuthorized: data.isAuthorized,
-          message: data.isAuthorized ? '授权成功' : '您不是该仓库的贡献者',
+          message: data.isAuthorized ? '授权成功' : '您没有该仓库的写入权限',
           repo: data.repo || '',
           user: data.user,
         });
@@ -98,11 +98,11 @@ export function PermissionCheck({ children }: { children: React.ReactNode }) {
               <p className="text-sm text-center">
                 您已使用 GitHub 账号{' '}
                 <strong>{permissionState.user?.login}</strong>{' '}
-                登录，但您不是仓库 <strong>{permissionState.repo}</strong>{' '}
-                的贡献者。
+                登录，但您没有仓库 <strong>{permissionState.repo}</strong>{' '}
+                的写入权限。
               </p>
               <p className="text-sm text-center text-muted-foreground">
-                请联系仓库管理员将您添加为贡献者，或使用有权限的 GitHub
+                请联系仓库管理员将您添加为具有写入权限的协作者，或使用有权限的 GitHub
                 账号登录。
               </p>
             </div>

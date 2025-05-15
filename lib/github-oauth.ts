@@ -8,7 +8,7 @@ export function getGitHubAuthUrl(state: string) {
   const params = new URLSearchParams({
     client_id: GITHUB_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
-    scope: "read:user",
+    scope: "read:user repo",
     state,
     allow_signup: "true",
   })
@@ -105,6 +105,7 @@ export async function hasRepoWritePermission(accessToken: string, username: stri
     }
 
     const permission = await response.json()
+    console.log("用户权限信息:", JSON.stringify(permission))
     // 检查权限是否为 write、admin 或 maintain（这些都包含写入权限）
     return ['write', 'admin', 'maintain'].includes(permission.permission)
   } catch (error) {
