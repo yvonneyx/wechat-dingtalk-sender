@@ -74,7 +74,7 @@ export async function sendWeChatArticleToDingTalk(articleUrl: string, group: any
     await extractWeChatArticleInfo(articleUrl);
 
   const markdownText = `
-  **[广播] AntV 数据可视化公众号推文新鲜出炉**
+  **[广播] AntV 数据可视化精彩内容上线**
 
   ---
 
@@ -82,7 +82,7 @@ export async function sendWeChatArticleToDingTalk(articleUrl: string, group: any
 
   **《${title}》**
 
-  > 作者：${author}
+  > 作者：${author || "AntV"}
 
   ${description}
 
