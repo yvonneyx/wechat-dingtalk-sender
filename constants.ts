@@ -4,7 +4,7 @@ export const dingGroups = [
   {
     id: 'group-g2-g6-doc',
     name: 'G2、G6 文档完善迫在眉睫',
-    accessToken: process.env.GROUP_G2_G6_DOC_ACCESS_TOKEN
+    accessToken: process.env.TOKEN_group_g2_g6_doc
   },
   { id: '131685001908', name: 'AntV OSCP 文档季开发者交流群', accessToken: process.env.TOKEN_131685001908 },
   { id: '9760006963', name: 'AntV 内部服务群（答疑先看公告）', accessToken: process.env.TOKEN_9760006963 },
@@ -14,5 +14,6 @@ export const dingGroups = [
   { id: '30088652', name: 'G6 图可视化交流群', accessToken: process.env.TOKEN_30088652 },
   { id: '127855003906', name: 'G6 社区开源先锋', accessToken: process.env.TOKEN_127855003906 },
   { id: 'group-g6-open-source-leader', name: 'AntV 开源先锋', accessToken: process.env.TOKEN_group_g6_open_source_leader },
-  { id: '44841855', name: 'F2 问题答疑 & 技术支持', accessToken: process.env.TOKEN_44841855 }
+  { id: '44841855', name: 'F2 问题答疑 & 技术支持', accessToken: process.env.TOKEN_44841855 },
+  { id: 'group-s2-vip-exchange', name: 'AntV/S2 VIP交流包厢', accessToken: process.env.TOKEN_group_s2_vip_exchange }
 ];
