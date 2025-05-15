@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAccessToken, getUserInfo, isRepoContributor } from "@/lib/github-oauth"
+import { getAccessToken, getUserInfo, hasRepoWritePermission } from "@/lib/github-oauth"
 import { verifyState, setSession } from "@/lib/session"
 import { GITHUB_REQUIRED_REPO } from "@/constants"
 
@@ -31,8 +31,8 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL("/auth/error?error=UserInfoError", request.url))
     }
 
-    // 检查用户是否为仓库贡献者
-    const isContributor = await isRepoContributor(accessToken, userInfo.login, GITHUB_REQUIRED_REPO)
+    // 检查用户是否有仓库写入权限
+    const hasWritePermission = await hasRepoWritePermission(accessToken, userInfo.login, GITHUB_REQUIRED_REPO)
 
     // 设置会话
     setSession({
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         avatar_url: userInfo.avatar_url,
       },
       accessToken,
-      isAuthorized: isContributor,
+      isAuthorized: hasWritePermission,
       repo: GITHUB_REQUIRED_REPO,
       expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24小时后过期
     })
